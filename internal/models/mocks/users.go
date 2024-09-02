@@ -1,6 +1,10 @@
 package mocks
 
-import "github.com/fseba/snippetbox/internal/models"
+import (
+	"time"
+
+	"github.com/fseba/snippetbox/internal/models"
+)
 
 type UserModel struct{}
 
@@ -11,6 +15,20 @@ func (m *UserModel) Insert(name, email, password string) error {
 	default:
 		return nil
 	}
+}
+
+func (m *UserModel) Get(id int) (*models.User, error) {
+	if id == 1 {
+		return &models.User{
+				ID:      1,
+				Name:    "Alice",
+				Email:   "alice@example.com",
+				Created: time.Now(),
+			},
+			nil
+	}
+
+	return nil, models.ErrNoRecord
 }
 
 func (m *UserModel) Authenticate(email, password string) (int, error) {
@@ -27,4 +45,13 @@ func (m *UserModel) Exists(id int) (bool, error) {
 	default:
 		return false, nil
 	}
+}
+func (m *UserModel) PasswordUpdate(id int, currentPassword, newPassword string) error {
+	if id == 1 {
+		if currentPassword != "pa$$word" {
+			return models.ErrInvalidCredentials
+		}
+		return nil
+	}
+	return models.ErrNoRecord
 }
